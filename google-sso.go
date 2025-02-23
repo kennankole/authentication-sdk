@@ -16,7 +16,7 @@ type OAuth2Config struct {
 }
 
 // NewOAuthClient creats a new http client using the provided token source
-func (o *OAuth2Config) NewOAuthClient(ctx context.Context, src oauth2.TokenSource) (*http.Client) {
+func (o *OAuth2Config) NewOAuthClient(ctx context.Context, src oauth2.TokenSource) *http.Client {
 	return oauth2.NewClient(ctx, src)
 }
 
@@ -26,7 +26,7 @@ func (o *OAuth2Config) AuthCodedURL() string {
 }
 
 // Exchange converts an authorization code into a token
-func(o *OAuth2Config) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
+func (o *OAuth2Config) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
 	token, err := o.Config.Exchange(ctx, code)
 	if err != nil {
 		return nil, fmt.Errorf("could not convert code to token: %w", err)
@@ -35,7 +35,7 @@ func(o *OAuth2Config) Exchange(ctx context.Context, code string) (*oauth2.Token,
 }
 
 // ValidateState validates the OAuth2 state parameter to protect against CSRF
-func (o *OAuth2Config) ValidateState(state string) (error) {
+func (o *OAuth2Config) ValidateState(state string) error {
 	if o.OauthStateString != state {
 		return fmt.Errorf("invalid OAuth2 state exptected: %s got %s", o.OauthStateString, state)
 	}
@@ -43,7 +43,7 @@ func (o *OAuth2Config) ValidateState(state string) (error) {
 }
 
 // ValidateTokenID validates the given token ID
-func(o *OAuth2Config) ValidateIDToken(ctx context.Context, tokenID string) (*idtoken.Payload, error) {
+func (o *OAuth2Config) ValidateIDToken(ctx context.Context, tokenID string) (*idtoken.Payload, error) {
 	payload, err := idtoken.Validate(ctx, tokenID, o.Config.ClientID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to validate the token ID: %w", err)

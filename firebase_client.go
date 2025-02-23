@@ -37,4 +37,3 @@ func (f *FirebaseAuthClient) CreateUser(ctx context.Context, user *auth.UserToCr
 	}
 	return newUser, nil
 }
-

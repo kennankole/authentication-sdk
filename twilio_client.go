@@ -9,7 +9,7 @@ import (
 
 const (
 	SMSChannel = "sms"
-	Approved = "approved"
+	Approved   = "approved"
 )
 
 type TwillioClient struct {
