@@ -1,2 +1,2 @@
-# firebase-auth-sdk
+# authentication-sdk
 This is an authentication SDK
