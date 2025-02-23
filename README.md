@@ -1,2 +1,2 @@
 # firebase-auth-sdk
-This is a firebase authentication custom SDK
+This is an authentication SDK
