@@ -1,4 +1,4 @@
-module github.com/kennankole/firebase-auth-sdk
+module github.com/kennankole/authentication-sdk
 
 go 1.23.0
 
