@@ -1,15 +1,16 @@
 package firebaseauthsdk
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/kennankole/authentication-sdk/domain"
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/verify/v2"
 )
 
 const (
 	SMSChannel = "sms"
-	Approved   = "approved"
 )
 
 type TwillioClient struct {
@@ -17,7 +18,7 @@ type TwillioClient struct {
 	VerifyServiceID string
 }
 
-func NewTwillioClient(configs *twilio.ClientParams, verifyServiceID string) *TwillioClient {
+func NewTwillioClient(ctx context.Context, configs *twilio.ClientParams, verifyServiceID string) *TwillioClient {
 	client := twilio.NewRestClientWithParams(*configs)
 	return &TwillioClient{
 		Client:          client,
@@ -26,32 +27,46 @@ func NewTwillioClient(configs *twilio.ClientParams, verifyServiceID string) *Twi
 }
 
 // SendOTP sends an OTP to a given phone number
-func (t *TwillioClient) SendOTP(phoneNumber string) (string, error) {
+func (t *TwillioClient) SendOTP(ctx context.Context, phoneNumber string) (*domain.OTPResponse, error) {
 	params := &openapi.CreateVerificationCheckParams{}
 	params.SetTo(phoneNumber)
 	params.SetCode(SMSChannel)
 
 	resp, err := t.Client.VerifyV2.CreateVerificationCheck(t.VerifyServiceID, params)
 	if err != nil {
-		return "", fmt.Errorf("failed to send OTP %w", err)
+		return nil, fmt.Errorf("failed to send OTP %w", err)
 	}
-	return *resp.Sid, nil
+	return &domain.OTPResponse{
+		Sid: resp.Sid,
+		ServiceSid: resp.ServiceSid,
+		AccountSid: resp.AccountSid,
+		Channel: resp.Channel,
+		To: resp.To,
+		Status: resp.Status,
+		DateCreated: resp.DateCreated,
+		DateUpdated: resp.DateUpdated,
+	}, nil
 }
 
 // CheckOTP verifies the OTP
-func (t *TwillioClient) CheckOTP(phoneNumber string) (string, error) {
+func (t *TwillioClient) CheckOTP(ctx context.Context, phoneNumber string) (*domain.OTPResponse, error) {
 	params := &openapi.CreateVerificationCheckParams{}
 	params.SetTo(phoneNumber)
 	params.SetCode(SMSChannel)
 
 	resp, err := t.Client.VerifyV2.CreateVerificationCheck(t.VerifyServiceID, params)
 	if err != nil {
-		return "", fmt.Errorf("could not verify the OTP %s", err)
+		return nil, fmt.Errorf("could not verify the OTP %s", err)
 	}
+	return &domain.OTPResponse{
+		Sid: resp.Sid,
+		ServiceSid: resp.ServiceSid,
+		AccountSid: resp.AccountSid,
+		Channel: resp.Channel,
+		To: resp.To,
+		Status: resp.Status,
+		DateCreated: resp.DateCreated,
+		DateUpdated: resp.DateUpdated,
+	}, nil
 
-	if *resp.Status == Approved {
-		return "Correct", nil
-	} else {
-		return "Incorrect", nil
-	}
 }
