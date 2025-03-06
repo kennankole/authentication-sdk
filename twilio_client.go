@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kennankole/authentication-sdk/domain"
 	"github.com/twilio/twilio-go"
 	openapi "github.com/twilio/twilio-go/rest/verify/v2"
 )
@@ -27,46 +26,27 @@ func NewTwillioClient(ctx context.Context, configs *twilio.ClientParams, verifyS
 }
 
 // SendOTP sends an OTP to a given phone number
-func (t *TwillioClient) SendOTP(ctx context.Context, phoneNumber string) (*domain.OTPResponse, error) {
-	params := &openapi.CreateVerificationCheckParams{}
+func (t *TwillioClient) SendOTP(ctx context.Context, phoneNumber string) (*openapi.VerifyV2Verification, error) {
+	params := &openapi.CreateVerificationParams{}
 	params.SetTo(phoneNumber)
-	params.SetCode(SMSChannel)
+	params.SetChannel(SMSChannel)
 
-	resp, err := t.Client.VerifyV2.CreateVerificationCheck(t.VerifyServiceID, params)
+	resp, err := t.Client.VerifyV2.CreateVerification(t.VerifyServiceID, params)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send OTP %w", err)
 	}
-	return &domain.OTPResponse{
-		Sid: resp.Sid,
-		ServiceSid: resp.ServiceSid,
-		AccountSid: resp.AccountSid,
-		Channel: resp.Channel,
-		To: resp.To,
-		Status: resp.Status,
-		DateCreated: resp.DateCreated,
-		DateUpdated: resp.DateUpdated,
-	}, nil
+	return resp, nil
 }
 
 // CheckOTP verifies the OTP
-func (t *TwillioClient) CheckOTP(ctx context.Context, phoneNumber string) (*domain.OTPResponse, error) {
+func (t *TwillioClient) CheckOTP(ctx context.Context, phoneNumber, code string) (*openapi.VerifyV2VerificationCheck, error) {
 	params := &openapi.CreateVerificationCheckParams{}
 	params.SetTo(phoneNumber)
-	params.SetCode(SMSChannel)
+	params.SetCode(code)
 
 	resp, err := t.Client.VerifyV2.CreateVerificationCheck(t.VerifyServiceID, params)
 	if err != nil {
-		return nil, fmt.Errorf("could not verify the OTP %s", err)
+		return nil, fmt.Errorf("could not verify the OTP %w", err)
 	}
-	return &domain.OTPResponse{
-		Sid: resp.Sid,
-		ServiceSid: resp.ServiceSid,
-		AccountSid: resp.AccountSid,
-		Channel: resp.Channel,
-		To: resp.To,
-		Status: resp.Status,
-		DateCreated: resp.DateCreated,
-		DateUpdated: resp.DateUpdated,
-	}, nil
-
+	return resp, nil
 }
