@@ -1,7 +1,7 @@
 # authentication-sdk
 This is an authentication SDK
 
-# My SDK
+# Authentication SDK
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The authentication SDK is a Go library for abstracting the authorization and authentication workflows.
