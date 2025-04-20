@@ -1,0 +1,19 @@
+name: Go CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened] 
+    branches:
+      - "**"
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    container: golangci/golangci-lint:v2.0.0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run golangci-lint
+        run: golangci-lint run -c .golangci.yaml

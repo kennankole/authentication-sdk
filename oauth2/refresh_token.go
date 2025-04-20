@@ -9,7 +9,6 @@ import (
 )
 
 func (o *OAuth2Config) RefreshToken(ctx context.Context, input *RefreshTokenPayload) (*TokenResponse, error) {
-
 	header := map[string]string{
 		"Content-Type": "application/x-www-form-urlencoded",
 	}
@@ -26,8 +25,6 @@ func (o *OAuth2Config) RefreshToken(ctx context.Context, input *RefreshTokenPayl
 	if err := json.Unmarshal(resp, &results); err != nil {
 		return nil, fmt.Errorf("failed to request a new token: %w", err)
 	}
-	
-	return &results, nil
-	
-} 
 
+	return &results, nil
+}
