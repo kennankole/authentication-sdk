@@ -28,8 +28,8 @@ func MakeRequest(method, url string, body io.Reader, headers map[string]string) 
 		return nil, fmt.Errorf("failed to connect: %w", err)
 	}
 
-
 	defer response.Body.Close()
+
 	if response.StatusCode >= 400 {
 		return nil, fmt.Errorf("request failed with status code: %v", response.Status)
 	}
@@ -38,5 +38,6 @@ func MakeRequest(method, url string, body io.Reader, headers map[string]string) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body:%w", err)
 	}
+
 	return responseBody, nil
 }

@@ -1,0 +1,57 @@
+version: "2"
+run:
+  concurrency: 4
+  tests: true
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - copyloopvar
+    - errcheck
+    - errorlint
+    - funlen
+    - gocritic
+    - gosec
+    - govet
+    - importas
+    - ineffassign
+    - ireturn
+    - makezero
+    - misspell
+    - nilerr
+    - reassign
+    - staticcheck
+    - unparam
+    - unused
+    - wsl
+  settings:
+    errcheck:
+      check-type-assertions: true
+    funlen:
+      lines: 80
+      statements: 50
+    gosec:
+      severity: medium
+    misspell:
+      locale: US
+    staticcheck:
+      checks:
+        - all
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

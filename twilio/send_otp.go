@@ -1,6 +1,5 @@
 package twilio
 
-
 import (
 	"context"
 	"fmt"
@@ -18,7 +17,6 @@ func (t *TwillioClient) SendOTP(ctx context.Context, phoneNumber string) (*opena
 	if err != nil {
 		return nil, fmt.Errorf("failed to send OTP %w", err)
 	}
+
 	return resp, nil
 }
-
-

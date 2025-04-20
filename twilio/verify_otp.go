@@ -11,7 +11,6 @@ const (
 	SMSChannel = "sms"
 )
 
-
 // CheckOTP verifies the OTP
 func (t *TwillioClient) CheckOTP(ctx context.Context, phoneNumber, code string) (*openapi.VerifyV2VerificationCheck, error) {
 	params := &openapi.CreateVerificationCheckParams{}
@@ -22,5 +21,6 @@ func (t *TwillioClient) CheckOTP(ctx context.Context, phoneNumber, code string) 
 	if err != nil {
 		return nil, fmt.Errorf("could not verify the OTP %w", err)
 	}
+
 	return resp, nil
 }

@@ -1,12 +1,14 @@
 package fosite
 
 import (
+	"context"
 	"fmt"
 )
 
 // AuthorizationURL: Get Authorization Code
-func (o *OAuth2Config) AuthorizationURL() (string, error) {
+func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
 	url := fmt.Sprintf("%s/oauth2/auth?", o.OAuthURL)
+
 	if o.State == "" {
 		return "", fmt.Errorf("oauth state string is empty")
 	}
@@ -35,6 +37,6 @@ func (o *OAuth2Config) AuthorizationURL() (string, error) {
 		o.State,
 		codeChallenge,
 	)
+
 	return oauthURL, nil
 }
-

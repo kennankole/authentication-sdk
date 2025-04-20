@@ -7,7 +7,6 @@ import (
 	"github.com/kennankole/authentication-sdk/request"
 )
 
-
 // FetchUserData fetches users data from the resource owner
 func (o *OAuth2Config) FetchUserData(ctx context.Context, accessToken, idpEndpoint string) ([]byte, error) {
 	if accessToken == "" || idpEndpoint == "" {
