@@ -4,20 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*AccessTokenClaims, error) {
-	if tokenString == "" {
-		return nil, fmt.Errorf("missing refresh token")
+// VerifyJWTRefreshToken is used to verify the refresh token
+func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken string) (*RefreshTokenClaims, error) {
+	if refreshToken == "" {
+		return nil, fmt.Errorf("missing access token")
 	}
 
-	expectedAudience := []string{customersAPI, ridersAPI, merchantsAPI}
+	expectedIssuer := defaultIssuer
+	expectedAudience := []string{expectedIssuer}
 
-	claims := &AccessTokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+	claims := &RefreshTokenClaims{}
+
+	_, err := jwt.ParseWithClaims(refreshToken, claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
@@ -27,11 +29,11 @@ func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*Ac
 
 	if err != nil {
 		if errors.Is(err, jwt.ErrTokenExpired) {
-			return nil, fmt.Errorf("refresh token expired: %w", err)
+			return nil, fmt.Errorf("token expired: %w", err)
 		}
 
 		if errors.Is(err, jwt.ErrTokenNotValidYet) {
-			return nil, fmt.Errorf("refresh token not yet valid: %w", err)
+			return nil, fmt.Errorf("token not yet valid: %w", err)
 		}
 
 		return nil, fmt.Errorf("an error occurred: %w", err)
@@ -56,14 +58,4 @@ func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*Ac
 	}
 
 	return claims, nil
-}
-
-func isAudienceValid(aud jwt.ClaimStrings, target []string) bool {
-	for _, i := range aud {
-		if slices.Contains(target, i) {
-			return true
-		}
-	}
-
-	return false
 }

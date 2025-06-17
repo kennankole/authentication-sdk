@@ -1,11 +1,13 @@
-package fosite
+package googleoauth
 
 import (
 	"context"
 	"fmt"
 )
 
-// AuthorizationURL: Get Authorization Code
+// https://developers.google.com/identity/protocols/oauth2/web-server
+
+// AuthorizationURL: Redirects the user to the consent screen to obtain permission to access user details from the resource server(Google)
 func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
 	url := fmt.Sprintf("%s/oauth2/auth?", o.OAuthURL)
 
@@ -29,11 +31,12 @@ func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
 			"scope=%s&"+
 			"state=%s&"+
 			"code_challenge=%s&"+
-			"code_challenge_method=S256",
+			"code_challenge_method=S256&"+
+			"access_type=offline",
 		url,
 		o.ClientID,
 		o.CallbackURL,
-		"openid profile email",
+		"openid profile email phone",
 		o.State,
 		codeChallenge,
 	)
