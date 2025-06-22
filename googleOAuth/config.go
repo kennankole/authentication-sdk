@@ -1,4 +1,4 @@
-package fosite
+package googleoauth
 
 func NewOAuthClient(client OAuth2Config) *OAuth2Config {
 	return &OAuth2Config{
@@ -11,5 +11,6 @@ func NewOAuthClient(client OAuth2Config) *OAuth2Config {
 		TokenURL:     client.TokenURL,
 		CodeVerifier: client.CodeVerifier,
 		Code:         client.Code,
+		AccessType:   client.AccessType,
 	}
 }

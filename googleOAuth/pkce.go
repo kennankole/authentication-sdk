@@ -1,4 +1,4 @@
-package fosite
+package googleoauth
 
 import (
 	"crypto/rand"
