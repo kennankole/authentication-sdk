@@ -18,13 +18,13 @@ const (
 )
 
 // IssueToken issues access and refresh tokens
-func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*string, *string, error) {
+func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*TokenResponse, error) {
 	if userID == "" || role == "" {
-		return nil, nil, fmt.Errorf("missing user id or role or both: user/role cannot be empty")
+		return nil, fmt.Errorf("missing user id or role or both: user/role cannot be empty")
 	}
 
 	currentTime := time.Now()
-	tokenClaims := AccessTokenClaims{
+	accessTokenClaims := TokenClaims{
 		UserID: userID,
 		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -34,19 +34,18 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*s
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			Subject:   userID,
+			ID:        uuid.New().String(),
 		},
 	}
-	newAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims)
+	newAccessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
 
-	token, err := newAccessToken.SignedString(j.SecretKey)
+	accessToken, err := newAccessToken.SignedString(j.SecretKey)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to sign the access token: %w", err)
+		return nil, fmt.Errorf("failed to sign the access token: %w", err)
 	}
 
-	refreshTokenClaims := RefreshTokenClaims{
+	refreshTokenClaims := TokenClaims{
 		UserID: userID,
-		Role:   role,
-		JTI:    uuid.New().String(),
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    defaultIssuer,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(7 * 24 * time.Hour)),
@@ -54,14 +53,22 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*s
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			Subject:   userID,
+			ID:        uuid.New().String(),
 		},
 	}
 	newRefreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 	refreshToken, err := newRefreshToken.SignedString(j.SecretKey)
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to sign the refresh token: %w", err)
+		return nil, fmt.Errorf("failed to sign the refresh token: %w", err)
 	}
 
-	return &token, &refreshToken, nil
+	results := &TokenResponse{
+		AccessTokenClaims:  &accessTokenClaims,
+		AccessToken:        accessToken,
+		RefreshTokenClaims: &refreshTokenClaims,
+		RefreshToken:       refreshToken,
+	}
+
+	return results, nil
 }

@@ -61,5 +61,5 @@ type TokenIDClaims struct {
 	Locale              string    `json:"locale,omitempty"`
 	PhoneNumber         string    `json:"phone_number,omitempty"`
 	PhoneNumberVerified bool      `json:"phone_number_verified,omitempty"`
-	ID                  string    `json:"user_id"`
+	ID                  string    `json:"sub"`
 }

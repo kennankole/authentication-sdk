@@ -9,7 +9,7 @@ import (
 )
 
 // VerifyJWTRefreshToken is used to verify the refresh token
-func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken string) (*RefreshTokenClaims, error) {
+func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken string) (*TokenClaims, error) {
 	if refreshToken == "" {
 		return nil, fmt.Errorf("missing access token")
 	}
@@ -17,7 +17,7 @@ func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken stri
 	expectedIssuer := defaultIssuer
 	expectedAudience := []string{expectedIssuer}
 
-	claims := &RefreshTokenClaims{}
+	claims := &TokenClaims{}
 
 	_, err := jwt.ParseWithClaims(refreshToken, claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
