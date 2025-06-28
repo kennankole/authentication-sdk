@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-// https://developers.google.com/identity/protocols/oauth2/web-server
-
 // AuthorizationURL: Redirects the user to the consent screen to obtain permission to access user details from the resource server(Google)
 func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
 	url := fmt.Sprintf("%s/oauth2/auth?", o.OAuthURL)

@@ -9,15 +9,15 @@ import (
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*AccessTokenClaims, error) {
+func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*TokenClaims, error) {
 	if tokenString == "" {
 		return nil, fmt.Errorf("missing refresh token")
 	}
 
 	expectedAudience := []string{customersAPI, ridersAPI, merchantsAPI}
 
-	claims := &AccessTokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+	claims := &TokenClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
