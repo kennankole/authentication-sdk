@@ -9,12 +9,12 @@ import (
 )
 
 // Exchange: exchanges the authorization code for an access token:
-func (o *OAuth2Config) Exchange(ctx context.Context, code *string) (*TokenResponse, error) {
-	if code == nil {
+func (o *OAuth2Config) Exchange(ctx context.Context, code, verifier string) (*TokenResponse, error) {
+	if code == "" {
 		return nil, fmt.Errorf("code cannot be empty")
 	}
 
-	if o.CodeVerifier == "" {
+	if verifier == "" {
 		return nil, fmt.Errorf("could not find code verifier which is required in the OAuth2.1 flow")
 	}
 
@@ -25,7 +25,7 @@ func (o *OAuth2Config) Exchange(ctx context.Context, code *string) (*TokenRespon
 		GrantType:    o.GrantType,
 		TokenURL:     o.TokenURL,
 		Code:         code,
-		CodeVerifier: o.CodeVerifier,
+		CodeVerifier: verifier,
 	}
 
 	header := map[string]string{

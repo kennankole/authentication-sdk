@@ -6,20 +6,18 @@ import (
 )
 
 // AuthorizationURL: Redirects the user to the consent screen to obtain permission to access user details from the resource server(Google)
-func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
+func (o *OAuth2Config) AuthorizationURL(ctx context.Context, oauthState, verifier string) (string, error) {
 	url := fmt.Sprintf("%s/oauth2/auth?", o.OAuthURL)
 
-	if o.State == "" {
-		return "", fmt.Errorf("oauth state string is empty")
+	if oauthState == "" {
+		return "", fmt.Errorf("state is missing")
 	}
 
-	if o.CodeVerifier == "" {
-		if _, err := o.GenerateCodeVerifier(); err != nil {
-			return "", fmt.Errorf("failed to generate code verifier: %w", err)
-		}
+	if verifier == "" {
+		return "", fmt.Errorf("verifier missing")
 	}
 
-	codeChallenge := GenerateCodeChallenge(o.CodeVerifier)
+	codeChallenge := GenerateCodeChallenge(verifier)
 
 	oauthURL := fmt.Sprintf(
 		"%s"+
@@ -35,7 +33,7 @@ func (o *OAuth2Config) AuthorizationURL(ctx context.Context) (string, error) {
 		o.ClientID,
 		o.CallbackURL,
 		"openid profile email phone",
-		o.State,
+		oauthState,
 		codeChallenge,
 	)
 

@@ -9,16 +9,16 @@ import (
 )
 
 type OAuth2Config struct {
-	State        string  `json:"state,omitempty"`
-	ClientID     string  `json:"client_id,omitempty"`
-	ClientSecret string  `json:"client_secret,omitempty"`
-	CallbackURL  string  `json:"callback_url,omitempty"`
-	OAuthURL     string  `json:"oauthUrl,omitempty"`
-	GrantType    string  `json:"grant_type,omitempty"`
-	Code         *string `json:"code,omitempty"`
-	TokenURL     string  `json:"token_url,omitempty"`
-	CodeVerifier string  `json:"code_verifier,omitempty"`
-	AccessType   string  `json:"access_type,omitempty"`
+	State        string `json:"state,omitempty"`
+	ClientID     string `json:"client_id,omitempty"`
+	ClientSecret string `json:"client_secret,omitempty"`
+	CallbackURL  string `json:"callback_url,omitempty"`
+	OAuthURL     string `json:"oauthUrl,omitempty"`
+	GrantType    string `json:"grant_type,omitempty"`
+	Code         string `json:"code,omitempty"`
+	TokenURL     string `json:"token_url,omitempty"`
+	CodeVerifier string `json:"code_verifier,omitempty"`
+	AccessType   string `json:"access_type,omitempty"`
 }
 
 func (o *OAuth2Config) ToReader() *strings.Reader {
@@ -28,7 +28,7 @@ func (o *OAuth2Config) ToReader() *strings.Reader {
 	form.Set("client_secret", o.ClientSecret)
 	form.Set("redirect_uri", o.CallbackURL)
 	form.Set("token_url", o.TokenURL)
-	form.Set("code", *o.Code)
+	form.Set("code", o.Code)
 	form.Set("grant_type", o.GrantType)
 	form.Set("code_verifier", o.CodeVerifier)
 	form.Set("access_token", o.AccessType)
