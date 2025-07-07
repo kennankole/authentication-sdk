@@ -72,3 +72,44 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*T
 
 	return results, nil
 }
+
+// GenerateOAuthState generates OAuth2 state
+func (j *JWTConfig) GenerateOAuthState(ctx context.Context, userID *string, purpose, userType string) (*TokenResponse, error) {
+	var subject string
+
+	if userID != nil {
+		subject = *userID
+	}
+
+	verifier, err := j.GenerateCodeVerifier()
+	if err != nil {
+		return nil, err
+	}
+
+	oauthTokenClaims := &TokenClaims{
+		UserID:       subject,
+		Purpose:      purpose,
+		Role:         userType,
+		CodeVerifier: verifier,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(5 * time.Minute)),
+			Subject:   subject,
+			ID:        uuid.New().String(),
+		},
+	}
+
+	oauthStateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, oauthTokenClaims)
+
+	token, err := oauthStateToken.SignedString(j.OAuthStateSecretKey)
+	if err != nil {
+		return nil, err
+	}
+
+	results := &TokenResponse{
+		StateToken:       token,
+		OAuthStateClaims: oauthTokenClaims,
+	}
+
+	return results, nil
+}

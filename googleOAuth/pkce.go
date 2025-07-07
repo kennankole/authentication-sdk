@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Generates the code verifier
+// GenerateCodeVerifier: generates the code verifier for PKCE
 func (o *OAuth2Config) GenerateCodeVerifier() (string, error) {
 	code := make([]byte, 32)
 
@@ -17,12 +17,12 @@ func (o *OAuth2Config) GenerateCodeVerifier() (string, error) {
 		return "", fmt.Errorf("unable to generate code verifier: %w", err)
 	}
 
-	o.CodeVerifier = strings.TrimRight(base64.URLEncoding.EncodeToString(code), "=")
+	verifier := strings.TrimRight(base64.URLEncoding.EncodeToString(code), "=")
 
-	return o.CodeVerifier, nil
+	return verifier, nil
 }
 
-// CodeChallenge hashes the code verifier
+// CodeChallenge: hashes the code verifier
 func GenerateCodeChallenge(codeverifier string) string {
 	shaBytes := sha256.Sum256([]byte(codeverifier))
 	return strings.TrimRight(base64.URLEncoding.EncodeToString(shaBytes[:]), "=")
