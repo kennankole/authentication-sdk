@@ -9,12 +9,11 @@ import (
 	"github.com/google/uuid"
 )
 
-const defaultIssuer = "http://localhost:9000/v1/auth"
-
 const (
-	customersAPI = "customers-services"
-	ridersAPI    = "riders-services"
-	merchantsAPI = "merchants-service"
+	customersAPI  = "customers-services"
+	ridersAPI     = "riders-services"
+	merchantsAPI  = "merchants-service"
+	defaultIssuer = "http://localhost:9000/v1/auth"
 )
 
 // IssueToken issues access and refresh tokens
@@ -28,7 +27,7 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*T
 		UserID: userID,
 		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    defaultIssuer,
+			Issuer:    j.Host,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(15 * time.Minute)),
 			Audience:  []string{customersAPI, ridersAPI, merchantsAPI},
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
@@ -47,7 +46,7 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*T
 	refreshTokenClaims := TokenClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    defaultIssuer,
+			Issuer:    j.Host,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(7 * 24 * time.Hour)),
 			Audience:  []string{defaultIssuer},
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
@@ -109,6 +108,37 @@ func (j *JWTConfig) GenerateOAuthState(ctx context.Context, userID *string, purp
 	results := &TokenResponse{
 		StateToken:       token,
 		OAuthStateClaims: oauthTokenClaims,
+	}
+
+	return results, nil
+}
+
+func (j *JWTConfig) IssueCartToken(ctx context.Context, id string) (*SignedCartClaims, error) {
+	if id == "" {
+		return nil, fmt.Errorf("missing id")
+	}
+
+	currentTime := time.Now()
+	signIDClaims := &CartKeyClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    j.Host,
+			ExpiresAt: jwt.NewNumericDate(currentTime.Add(2 * time.Hour)),
+			Audience:  []string{customersAPI},
+			IssuedAt:  jwt.NewNumericDate(currentTime),
+			Subject:   id,
+			ID:        uuid.NewString(),
+		},
+	}
+	newCartKey := jwt.NewWithClaims(jwt.SigningMethodHS256, signIDClaims)
+
+	cartToken, err := newCartKey.SignedString(j.SecretKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign the cart key :%w", err)
+	}
+
+	results := &SignedCartClaims{
+		CartToken: cartToken,
+		Claims:    signIDClaims,
 	}
 
 	return results, nil
