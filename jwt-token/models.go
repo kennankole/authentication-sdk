@@ -15,6 +15,7 @@ type TokenClaims struct {
 type JWTConfig struct {
 	SecretKey           []byte
 	OAuthStateSecretKey []byte
+	Host                string `json:"host,omitempty"`
 }
 
 type TokenResponse struct {
@@ -24,4 +25,14 @@ type TokenResponse struct {
 	StateToken         string
 	AccessToken        string
 	RefreshToken       string
+}
+
+type CartKeyClaims struct {
+	jwt.RegisteredClaims
+	CartID string `json:"cart_id,omitempty"`
+}
+
+type SignedCartClaims struct {
+	CartToken string `json:"cart_token,omitempty"`
+	Claims    *CartKeyClaims
 }
