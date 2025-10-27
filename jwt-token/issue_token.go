@@ -9,13 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const (
-	customersAPI  = "customers-services"
-	ridersAPI     = "riders-services"
-	merchantsAPI  = "merchants-service"
-	defaultIssuer = "http://localhost:9000/v1/auth"
-)
-
 // IssueToken issues access and refresh tokens
 func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*TokenResponse, error) {
 	if userID == "" || role == "" {
@@ -29,7 +22,7 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*T
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    j.Host,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(15 * time.Minute)),
-			Audience:  []string{customersAPI, ridersAPI, merchantsAPI},
+			Audience:  []string{j.CustomerAudience, j.RiderAudience, j.MerchangAudience},
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			Subject:   userID,
@@ -48,7 +41,7 @@ func (j *JWTConfig) IssueJWTTokens(ctx context.Context, role, userID string) (*T
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    j.Host,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(7 * 24 * time.Hour)),
-			Audience:  []string{defaultIssuer},
+			Audience:  []string{j.Host},
 			NotBefore: jwt.NewNumericDate(currentTime.Add(3 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			Subject:   userID,
@@ -123,7 +116,7 @@ func (j *JWTConfig) IssueCartToken(ctx context.Context, id string) (*SignedCartC
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    j.Host,
 			ExpiresAt: jwt.NewNumericDate(currentTime.Add(2 * time.Hour)),
-			Audience:  []string{customersAPI},
+			Audience:  []string{j.CustomerAudience},
 			IssuedAt:  jwt.NewNumericDate(currentTime),
 			Subject:   id,
 			ID:        uuid.NewString(),

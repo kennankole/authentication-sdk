@@ -16,6 +16,9 @@ type JWTConfig struct {
 	SecretKey           []byte
 	OAuthStateSecretKey []byte
 	Host                string `json:"host,omitempty"`
+	RiderAudience       string `json:"rider_audience,omitempty"`
+	CustomerAudience    string `json:"customer_audience,omitempty"`
+	MerchangAudience    string `json:"merchant_audience,omitempty"`
 }
 
 type TokenResponse struct {

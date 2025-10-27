@@ -12,9 +12,9 @@ func (j *JWTConfig) VerifyJWTToken(ctx context.Context, tokenString string) (*To
 		return nil, fmt.Errorf("missing access token")
 	}
 
-	expectedAudience := []string{customersAPI, ridersAPI, merchantsAPI}
+	expectedAudience := []string{j.CustomerAudience, j.RiderAudience, j.CustomerAudience}
 
-	return j.verifyToken(ctx, tokenString, defaultIssuer, expectedAudience, true, true, j.SecretKey)
+	return j.verifyToken(ctx, tokenString, j.Host, expectedAudience, true, true, j.SecretKey)
 }
 
 func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken string) (*TokenClaims, error) {
@@ -22,9 +22,9 @@ func (j *JWTConfig) VerifyJWTRefreshToken(ctx context.Context, refreshToken stri
 		return nil, fmt.Errorf("missing refresh token")
 	}
 
-	expectedAudience := []string{defaultIssuer}
+	expectedAudience := []string{j.Host}
 
-	return j.verifyToken(ctx, refreshToken, defaultIssuer, expectedAudience, true, true, j.SecretKey)
+	return j.verifyToken(ctx, refreshToken, j.Host, expectedAudience, true, true, j.SecretKey)
 }
 
 func (j *JWTConfig) VerifyOAuthStateJWTToken(ctx context.Context, token string) (*TokenClaims, error) {
@@ -32,7 +32,7 @@ func (j *JWTConfig) VerifyOAuthStateJWTToken(ctx context.Context, token string) 
 		return nil, fmt.Errorf("missing OAuthState token")
 	}
 
-	return j.verifyToken(ctx, token, defaultIssuer, nil, false, false, j.OAuthStateSecretKey)
+	return j.verifyToken(ctx, token, j.Host, nil, false, false, j.OAuthStateSecretKey)
 }
 
 func (j *JWTConfig) VerifyCartClaimToken(ctx context.Context, token string) (*CartKeyClaims, error) {
